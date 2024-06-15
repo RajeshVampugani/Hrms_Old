@@ -1122,40 +1122,83 @@ group by aa.department_name";
 
     #region Binding of Payroll Dashboard
 
+//    protected void bind_Payroll_dashboard()
+//    {
+//        string sqlstr_10 = @"select financial_year from tbl_payroll_tax_master order by id desc";
+//        DataSet ds_10 = DBTask.ExecuteDataset(ConfigurationManager.ConnectionStrings["intranetConnectionString"].ConnectionString.ToString(), CommandType.Text, sqlstr_10);
+//        string financial_year = ds_10.Tables[0].Rows[0]["financial_year"].ToString();
+
+//        string sqlstr_11 = @"select distinct MONTH,YEAR,b.branch_name,s.branch_id,case when s.flag=1 then 'Unfreezed' else 'Freezed' end as status ,
+//s.flag from tbl_payroll_employee_salary s
+//inner join dbo.tbl_intranet_branch_detail b 
+//on b.branch_id = s.branch_id where YEAR='" + financial_year + "' and s.flag=0";
+//        DataSet ds_11 = DBTask.ExecuteDataset(ConfigurationManager.ConnectionStrings["intranetConnectionString"].ConnectionString.ToString(), CommandType.Text, sqlstr_11);
+//        if (ds_11.Tables[0].Rows.Count > 0)
+//        {
+//            if (roleid == "13")
+//            {
+//                row_payout_summary.Visible = true;
+//            }
+//            else if (roleid == "1")
+//            {
+//                row_payout_summary.Visible = true;
+//            }
+//            else
+//            {
+//                row_No_Of_Emp_SalaryRange.Visible = true;
+//                row_Avg_Sal_Sal_BreakDown.Visible = true;
+//                row_freeze_status.Visible = true;
+//            }
+//        }
+//        else 
+//        {
+//            Output.Show("Payroll for the partcular month has not been freezed");
+//        }
+
+    //}
     protected void bind_Payroll_dashboard()
     {
         string sqlstr_10 = @"select financial_year from tbl_payroll_tax_master order by id desc";
         DataSet ds_10 = DBTask.ExecuteDataset(ConfigurationManager.ConnectionStrings["intranetConnectionString"].ConnectionString.ToString(), CommandType.Text, sqlstr_10);
-        string financial_year = ds_10.Tables[0].Rows[0]["financial_year"].ToString();
 
-        string sqlstr_11 = @"select distinct MONTH,YEAR,b.branch_name,s.branch_id,case when s.flag=1 then 'Unfreezed' else 'Freezed' end as status ,
-s.flag from tbl_payroll_employee_salary s
-inner join dbo.tbl_intranet_branch_detail b 
-on b.branch_id = s.branch_id where YEAR='" + financial_year + "' and s.flag=0";
-        DataSet ds_11 = DBTask.ExecuteDataset(ConfigurationManager.ConnectionStrings["intranetConnectionString"].ConnectionString.ToString(), CommandType.Text, sqlstr_11);
-        if (ds_11.Tables[0].Rows.Count > 0)
+        // Check if any rows are returned in the dataset
+        if (ds_10.Tables.Count > 0 && ds_10.Tables[0].Rows.Count > 0)
         {
-            if (roleid == "13")
+            string financial_year = ds_10.Tables[0].Rows[0]["financial_year"].ToString();
+
+            string sqlstr_11 = @"select distinct MONTH,YEAR,b.branch_name,s.branch_id,case when s.flag=1 then 'Unfreezed' else 'Freezed' end as status ,
+        s.flag from tbl_payroll_employee_salary s
+        inner join dbo.tbl_intranet_branch_detail b 
+        on b.branch_id = s.branch_id where YEAR='" + financial_year + "' and s.flag=0";
+            DataSet ds_11 = DBTask.ExecuteDataset(ConfigurationManager.ConnectionStrings["intranetConnectionString"].ConnectionString.ToString(), CommandType.Text, sqlstr_11);
+
+            if (ds_11.Tables.Count > 0 && ds_11.Tables[0].Rows.Count > 0)
             {
-                row_payout_summary.Visible = true;
-            }
-            else if (roleid == "1")
-            {
-                row_payout_summary.Visible = true;
+                if (roleid == "13" || roleid == "1")
+                {
+                    row_payout_summary.Visible = true;
+                }
+                else
+                {
+                    row_No_Of_Emp_SalaryRange.Visible = true;
+                    row_Avg_Sal_Sal_BreakDown.Visible = true;
+                    row_freeze_status.Visible = true;
+                }
             }
             else
             {
-                row_No_Of_Emp_SalaryRange.Visible = true;
-                row_Avg_Sal_Sal_BreakDown.Visible = true;
-                row_freeze_status.Visible = true;
+                Output.Show("Payroll for the particular month has not been freezed");
             }
         }
-        else 
+        else
         {
-            Output.Show("Payroll for the partcular month has not been freezed");
+            Output.Show("No financial year data found");
         }
-
     }
+
+   
+
+
 
     #endregion
 
